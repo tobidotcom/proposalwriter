@@ -9,7 +9,7 @@ OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Set the page configuration
-set_page_config(page_title="One-Click Proposal Writer")
+st.set_page_config(page_title="One-Click Proposal Writer")
 
 # Function to call OpenAI API
 def generate_proposal(user_inputs, model_name):
