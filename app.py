@@ -1,6 +1,8 @@
 import os
 import streamlit as st
 from openai import OpenAI
+import requests
+from bs4 import BeautifulSoup
 
 # Set the OpenAI API key
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
@@ -98,6 +100,16 @@ Contact Information
 [Provide contact details for the primary point of contact at McKinsey & Company, including name, title, email, and phone number.]
 """
 
+# Web scraper function
+def scrape_website(url):
+    try:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
+        text = soup.get_text()
+        return text
+    except Exception as e:
+        return f"Error scraping website: {e}"
+
 # Streamlit app
 st.title("One-Click Proposal Writer")
 
@@ -118,6 +130,22 @@ with st.form("proposal_form"):
     st.subheader("Offer + Pricing Details")
     offer_details = st.text_area("Describe your offer and pricing", key="offer_details")
 
+    # Optional Fields
+    st.subheader("Optional Fields")
+    client_linkedin, client_linkedin_data = None, None
+    client_linkedin_input = st.text_input("Learn from Client's LinkedIn", key="client_linkedin", value="", help="Provide the client's LinkedIn profile URL (optional)")
+    if client_linkedin_input:
+        client_linkedin_learn = st.button("Learn", key="client_linkedin_learn")
+        if client_linkedin_learn:
+            client_linkedin_data = scrape_website(client_linkedin_input)
+
+    client_website, client_website_data = None, None
+    client_website_input = st.text_input("Learn from Client's Website", key="client_website", value="", help="Provide the client's website URL (optional)")
+    if client_website_input:
+        client_website_learn = st.button("Learn", key="client_website_learn")
+        if client_website_learn:
+            client_website_data = scrape_website(client_website_input)
+
     # Submit button
     submitted = st.form_submit_button("Generate Proposal")
 
@@ -137,6 +165,12 @@ if submitted:
     Offer + Pricing Details:
     {offer_details}
     """
+
+    if client_linkedin_data:
+        user_inputs += f"\n\nLearn from Client's LinkedIn:\n{client_linkedin_data}"
+
+    if client_website_data:
+        user_inputs += f"\n\nLearn from Client's Website:\n{client_website_data}"
 
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
