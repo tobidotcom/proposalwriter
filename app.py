@@ -1,6 +1,4 @@
-from openai import OpenAI
-
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+import requests
 import streamlit as st
 from streamlit.commands.page_config import set_page_config
 
@@ -8,16 +6,32 @@ from streamlit.commands.page_config import set_page_config
 set_page_config(page_title="One-Click Proposal Writer")
 
 # Get the OpenAI API key from Streamlit secrets
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 
 # Function to call OpenAI API
 def generate_proposal(user_inputs):
-    response = client.chat.completions.create(model="gpt-3.5-turbo",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": user_inputs}
-    ])
+    API_URL = "https://api.openai.com/v1/chat/completions"
 
-    return response.choices[0].message.content
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {OPENAI_API_KEY}"
+    }
+
+    data = {
+        "model": "gpt-3.5-turbo",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": user_inputs}
+        ]
+    }
+
+    response = requests.post(API_URL, headers=headers, json=data)
+
+    if response.status_code == 200:
+        result = response.json()
+        return result["choices"][0]["message"]["content"]
+    else:
+        return f"Error: {response.status_code} - {response.text}"
 
 # Streamlit app
 st.title("One-Click Proposal Writer")
@@ -30,7 +44,7 @@ with st.form("proposal_form"):
     prospect_phone = st.text_input("Phone", key="prospect_phone")
     prospect_email = st.text_input("Email", key="prospect_email")
 
-    # User's Business Details 
+    # User's Business Details
     st.subheader("Your Business Details")
     user_biz_name = st.text_input("Business Name", key="user_biz_name")
     user_name = st.text_input("Your Name", key="user_name")
@@ -50,11 +64,11 @@ if submitted:
     Address: {prospect_address}
     Phone: {prospect_phone}
     Email: {prospect_email}
-    
+
     Your Business Details:
     Business Name: {user_biz_name}
     Your Name: {user_name}
-    
+
     Offer + Pricing Details:
     {offer_details}
     """
