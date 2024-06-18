@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import uuid
 from streamlit.commands.page_config import set_page_config
 
 # Set the page configuration
@@ -13,13 +14,16 @@ API_URL = "https://api.codegpt.co/api/v1/chat/completions"
 
 # Function to call CodeGPT API
 def generate_proposal(user_inputs):
+    # Generate a new UUID for agentId
+    agent_id = str(uuid.uuid4())
+
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
     }
     
     data = {
-        "agentId": "AGENT_ID",
+        "agentId": agent_id,  # Use the generated UUID
         "messages": [
             {"role": "user", "content": user_inputs}
         ],
