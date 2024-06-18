@@ -65,21 +65,21 @@ with st.form("proposal_form"):
     # Optional Fields
     st.subheader("Optional Fields")
     client_linkedin, client_linkedin_data = None, None
-    client_linkedin_input_col, client_linkedin_learn_col = st.columns(2)
+    client_linkedin_input_col, client_linkedin_submit_col = st.columns(2)
     with client_linkedin_input_col:
         client_linkedin_input = st.text_input("Learn from Client's LinkedIn", key="client_linkedin", value="", help="Provide the client's LinkedIn profile URL (optional)")
-    with client_linkedin_learn_col:
-        client_linkedin_learn = st.button("Learn", key="client_linkedin_learn")
-    if client_linkedin_learn:
+    with client_linkedin_submit_col:
+        client_linkedin_submit = st.form_submit_button("Learn from LinkedIn", key="client_linkedin_submit")
+    if client_linkedin_submit:
         client_linkedin_data = scrape_website(client_linkedin_input)
 
     client_website, client_website_data = None, None
-    client_website_input_col, client_website_learn_col = st.columns(2)
+    client_website_input_col, client_website_submit_col = st.columns(2)
     with client_website_input_col:
         client_website_input = st.text_input("Learn from Client's Website", key="client_website", value="", help="Provide the client's website URL (optional)")
-    with client_website_learn_col:
-        client_website_learn = st.button("Learn", key="client_website_learn")
-    if client_website_learn:
+    with client_website_submit_col:
+        client_website_submit = st.form_submit_button("Learn from Website", key="client_website_submit")
+    if client_website_submit:
         client_website_data = scrape_website(client_website_input)
 
     # Submit button
@@ -121,3 +121,4 @@ if submitted:
     proposal = response.choices[0].message.content
     st.subheader("Generated Proposal")
     st.write(proposal)
+
