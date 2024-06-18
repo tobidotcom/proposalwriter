@@ -1,6 +1,4 @@
-from openai import OpenAI
-
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+import openai
 import streamlit as st
 from streamlit.commands.page_config import set_page_config
 
@@ -8,14 +6,17 @@ from streamlit.commands.page_config import set_page_config
 set_page_config(page_title="One-Click Proposal Writer")
 
 # Get the OpenAI API key from Streamlit secrets
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Function to call OpenAI API
 def generate_proposal(user_inputs):
-    response = client.chat.completions.create(model="gpt-3.5-turbo",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": user_inputs}
-    ])
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": user_inputs}
+        ]
+    )
 
     return response.choices[0].message.content
 
