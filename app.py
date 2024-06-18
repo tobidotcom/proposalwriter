@@ -42,19 +42,19 @@ st.title("One-Click Proposal Writer")
 with st.form("proposal_form"):
     # Prospect Business Details
     st.subheader("Prospect Business Details")
-    prospect_biz_name = st.text_input("Business Name")
-    prospect_address = st.text_input("Address")
-    prospect_phone = st.text_input("Phone")
-    prospect_email = st.text_input("Email")
+    prospect_biz_name = st.text_input("Business Name", key="prospect_biz_name")
+    prospect_address = st.text_input("Address", key="prospect_address")
+    prospect_phone = st.text_input("Phone", key="prospect_phone")
+    prospect_email = st.text_input("Email", key="prospect_email")
     
     # User's Business Details 
     st.subheader("Your Business Details")
-    user_biz_name = st.text_input("Business Name") 
-    user_name = st.text_input("Your Name")
+    user_biz_name = st.text_input("Business Name", key="user_biz_name")
+    user_name = st.text_input("Your Name", key="user_name")
     
     # Offer + Pricing
     st.subheader("Offer + Pricing Details")
-    offer_details = st.text_area("Describe your offer and pricing")
+    offer_details = st.text_area("Describe your offer and pricing", key="offer_details")
     
     # Submit button
     submitted = st.form_submit_button("Generate Proposal")
