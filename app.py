@@ -1,37 +1,26 @@
-import requests
+import os
 import streamlit as st
-from streamlit.commands.page_config import set_page_config
+from openai import OpenAI
+
+# Set the OpenAI API key
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+
+# Create the OpenAI client
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Set the page configuration
 set_page_config(page_title="One-Click Proposal Writer")
 
-# Get the OpenAI API key from Streamlit secrets
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-
 # Function to call OpenAI API
-def generate_proposal(user_inputs):
-    API_URL = "https://api.openai.com/v1/chat/completions"
-
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {OPENAI_API_KEY}"
-    }
-
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [
+def generate_proposal(user_inputs, model_name):
+    response = client.chat.completions.create(
+        model=model_name,
+        messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": user_inputs}
         ]
-    }
-
-    response = requests.post(API_URL, headers=headers, json=data)
-
-    if response.status_code == 200:
-        result = response.json()
-        return result["choices"][0]["message"]["content"]
-    else:
-        return f"Error: {response.status_code} - {response.text}"
+    )
+    return response.choices[0].message.content
 
 # Streamlit app
 st.title("One-Click Proposal Writer")
@@ -53,6 +42,9 @@ with st.form("proposal_form"):
     st.subheader("Offer + Pricing Details")
     offer_details = st.text_area("Describe your offer and pricing", key="offer_details")
 
+    # Fine-tuned model name
+    fine_tuned_model = st.text_input("Fine-tuned Model Name", value="gpt-3.5-turbo", key="fine_tuned_model")
+
     # Submit button
     submitted = st.form_submit_button("Generate Proposal")
 
@@ -73,7 +65,7 @@ if submitted:
     {offer_details}
     """
 
-    proposal = generate_proposal(user_inputs)
+    proposal = generate_proposal(user_inputs, fine_tuned_model)
     st.subheader("Generated Proposal")
     st.write(proposal)
 
